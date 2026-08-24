@@ -1,0 +1,56 @@
+name: MDockPreview
+options:
+  bundleIdPrefix: com.maclife
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.maclife.mdockpreview
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    # Local, unsandboxed development build. Automatic signing reuses the same
+    # team as MFinder; TCC grants (Accessibility, Screen Recording) are keyed to
+    # this stable identity so they survive rebuilds.
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: CF5PGH3KGK
+    ENABLE_HARDENED_RUNTIME: NO
+  configs:
+    debug:
+      ONLY_ACTIVE_ARCH: YES
+    release:
+      # Enable the hardened runtime for a notarized Developer ID build. AX and
+      # ScreenCaptureKit need no extra entitlements — both are gated by TCC.
+      ENABLE_HARDENED_RUNTIME: YES
+targets:
+  MDockPreview:
+    type: application
+    platform: macOS
+    settings:
+      base:
+        # Technical identity stays "MDockPreview"; the display name is prettier.
+        PRODUCT_NAME: MDockPreview
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    sources:
+      - path: Sources
+      - path: Resources/donate-qr.png
+      - path: Resources/Localizable.xcstrings
+      - path: Resources/Assets.xcassets
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: MDock Preview
+        CFBundleDisplayName: MDock Preview
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        # Menu-bar only: no Dock icon, no main window.
+        LSUIElement: true
+        NSHumanReadableCopyright: ""
+        # English + Vietnamese, resolved from the String Catalog at build time.
+        CFBundleLocalizations:
+          - en
+          - vi
