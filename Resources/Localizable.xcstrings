@@ -11,6 +11,16 @@
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Preview trên Dock" } }
       }
     },
+    "Window switcher" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bộ chuyển cửa sổ" } }
+      }
+    },
+    "Hold Option (⌥) and press Tab to flip through all open windows." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ Option (⌥) và nhấn Tab để lướt qua tất cả cửa sổ đang mở." } }
+      }
+    },
     "If hidden, relaunch the app to reopen Settings" : {
       "localizations" : {
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nếu ẩn, hãy khởi chạy lại ứng dụng để mở lại Cài đặt" } }

@@ -205,12 +205,14 @@ private var rowDivider: some View {
 private struct GeneralTab: View {
     let settings: AppSettings
     @State private var previewsEnabled: Bool
+    @State private var switcherEnabled: Bool
     @State private var launchAtLogin: Bool
     @State private var showMenuBarIcon: Bool
 
     init(settings: AppSettings) {
         self.settings = settings
         _previewsEnabled = State(initialValue: settings.dockPreviewEnabled)
+        _switcherEnabled = State(initialValue: settings.windowSwitcherEnabled)
         _launchAtLogin = State(initialValue: LaunchAtLoginManager.isEnabled)
         _showMenuBarIcon = State(initialValue: settings.showMenuBarIcon)
     }
@@ -242,6 +244,18 @@ private struct GeneralTab: View {
                                 LaunchAtLoginManager.openLoginItemsSettings()
                             }
                         }
+                }
+            }
+
+            SettingsSection("Window switcher") {
+                SettingRow(
+                    icon: "square.stack.3d.up", color: .orange,
+                    title: "Window switcher",
+                    subtitle: "Hold Option (⌥) and press Tab to flip through all open windows."
+                ) {
+                    Toggle("", isOn: $switcherEnabled)
+                        .labelsHidden().toggleStyle(.switch)
+                        .onChange(of: switcherEnabled) { _, v in settings.windowSwitcherEnabled = v }
                 }
             }
 

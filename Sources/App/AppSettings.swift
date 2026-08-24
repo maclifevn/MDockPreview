@@ -9,6 +9,7 @@ final class AppSettings {
         static let previewTheme = "previewTheme"
         static let hasCompletedWelcome = "hasCompletedWelcome"
         static let showMenuBarIcon = "showMenuBarIcon"
+        static let windowSwitcherEnabled = "windowSwitcherEnabled"
     }
 
     /// Fired on the main actor after `dockPreviewEnabled` changes.
@@ -17,6 +18,8 @@ final class AppSettings {
     var onPreviewThemeChanged: (() -> Void)?
     /// Fired on the main actor after `showMenuBarIcon` changes.
     var onMenuBarVisibilityChanged: (() -> Void)?
+    /// Fired on the main actor after `windowSwitcherEnabled` changes.
+    var onWindowSwitcherConfigChanged: (() -> Void)?
 
     var dockPreviewEnabled: Bool {
         didSet {
@@ -42,6 +45,14 @@ final class AppSettings {
         }
     }
 
+    var windowSwitcherEnabled: Bool {
+        didSet {
+            guard windowSwitcherEnabled != oldValue else { return }
+            defaults.set(windowSwitcherEnabled, forKey: Key.windowSwitcherEnabled)
+            onWindowSwitcherConfigChanged?()
+        }
+    }
+
     /// Whether the first-launch welcome flow has been dismissed at least once.
     var hasCompletedWelcome: Bool {
         didSet {
@@ -60,6 +71,8 @@ final class AppSettings {
             ?? .system
         self.showMenuBarIcon =
             defaults.object(forKey: Key.showMenuBarIcon) as? Bool ?? true
+        self.windowSwitcherEnabled =
+            defaults.object(forKey: Key.windowSwitcherEnabled) as? Bool ?? true
         self.hasCompletedWelcome = defaults.bool(forKey: Key.hasCompletedWelcome)
     }
 }

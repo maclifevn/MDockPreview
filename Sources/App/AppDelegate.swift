@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settings = AppSettings()
     private lazy var dockPreviewController = DockPreviewController(settings: settings)
     private let statusItemController = StatusItemController()
+    private lazy var windowSwitcherController = WindowSwitcherController(settings: settings)
     private let welcomeController = WelcomeWindowController()
     private lazy var settingsController = SettingsWindowController(
         settings: settings,
@@ -31,12 +32,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         applyTheme()
         statusItemController.setVisible(settings.showMenuBarIcon)
+        // The switcher and Dock preview both drive AX; suspend hover previews
+        // while the switcher owns the screen so a stray panel can't pop up.
+        windowSwitcherController.onActiveChanged = { [weak self] active in
+            self?.dockPreviewController.setSuspended(active)
+        }
         maybeShowWelcome()
         dockPreviewController.applySettings()
+        windowSwitcherController.applySettings()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         dockPreviewController.stop()
+        windowSwitcherController.stop()
     }
 
     /// Relaunching the app (e.g. from Finder/Spotlight) reopens Settings — the
@@ -61,6 +69,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settings.onMenuBarVisibilityChanged = { [weak self] in
             guard let self else { return }
             self.statusItemController.setVisible(self.settings.showMenuBarIcon)
+        }
+        settings.onWindowSwitcherConfigChanged = { [weak self] in
+            self?.windowSwitcherController.applySettings()
         }
     }
 
