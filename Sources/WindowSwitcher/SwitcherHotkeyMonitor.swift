@@ -12,6 +12,7 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
         category: "switcher-hotkey"
     )
 
+    private let modifierFlag: CGEventFlags
     private let onStep: @MainActor @Sendable (Bool) -> Void
     private let onCommit: @MainActor @Sendable () -> Void
     private let onCancel: @MainActor @Sendable () -> Void
@@ -24,17 +25,19 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
     private var terminated = false
 
     // Touched only on the tap thread.
-    private var optionDown = false
+    private var modifierDown = false
     private var engaged = false
 
     private let tabKeyCode: Int64 = 48
     private let escKeyCode: Int64 = 53
 
     init(
+        modifier: CGEventFlags,
         onStep: @escaping @MainActor @Sendable (Bool) -> Void,
         onCommit: @escaping @MainActor @Sendable () -> Void,
         onCancel: @escaping @MainActor @Sendable () -> Void
     ) {
+        self.modifierFlag = modifier
         self.onStep = onStep
         self.onCommit = onCommit
         self.onCancel = onCancel
@@ -111,21 +114,21 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
             return Unmanaged.passUnretained(event)
 
         case .flagsChanged:
-            let nowOption = event.flags.contains(.maskAlternate)
-            if optionDown, !nowOption, engaged {
+            let nowModifier = event.flags.contains(modifierFlag)
+            if modifierDown, !nowModifier, engaged {
                 engaged = false
                 let commit = onCommit
                 Task { @MainActor in commit() }
             }
-            optionDown = nowOption
+            modifierDown = nowModifier
             return Unmanaged.passUnretained(event)
 
         case .keyDown:
             let code = event.getIntegerValueField(.keyboardEventKeycode)
-            if code == tabKeyCode, event.flags.contains(.maskAlternate) {
+            if code == tabKeyCode, event.flags.contains(modifierFlag) {
                 let forward = !event.flags.contains(.maskShift)
                 engaged = true
-                optionDown = true
+                modifierDown = true
                 let step = onStep
                 Task { @MainActor in step(forward) }
                 return nil

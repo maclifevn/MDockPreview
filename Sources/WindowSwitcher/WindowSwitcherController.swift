@@ -19,25 +19,26 @@ final class WindowSwitcherController {
         self.settings = settings
     }
 
+    /// Rebuilds the hotkey tap so a changed modifier (⌥/⌘/⌃) takes effect.
     func applySettings() {
-        if settings.windowSwitcherEnabled { start() } else { stop() }
-    }
-
-    func stop() {
         hotkey?.stop()
         hotkey = nil
         hide()
-    }
-
-    private func start() {
-        guard hotkey == nil else { return }
+        guard settings.windowSwitcherEnabled else { return }
         let monitor = SwitcherHotkeyMonitor(
+            modifier: settings.switcherModifier.flag,
             onStep: { [weak self] forward in self?.step(forward: forward) },
             onCommit: { [weak self] in self?.commit() },
             onCancel: { [weak self] in self?.cancel() }
         )
         hotkey = monitor
         monitor.start()
+    }
+
+    func stop() {
+        hotkey?.stop()
+        hotkey = nil
+        hide()
     }
 
     // MARK: - Hotkey actions (main actor)

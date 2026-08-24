@@ -16,6 +16,26 @@
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bộ chuyển cửa sổ" } }
       }
     },
+    "Shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím tắt" } }
+      }
+    },
+    "Flip through all open windows with a keyboard shortcut." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Lướt qua tất cả cửa sổ đang mở bằng một phím tắt." } }
+      }
+    },
+    "⌃ Tab may conflict with tab switching inside some apps (e.g. browsers)." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "⌃ Tab có thể xung đột với phím chuyển tab trong một số ứng dụng (ví dụ trình duyệt)." } }
+      }
+    },
+    "macOS reserves ⌘Tab for its own app switcher, so it can't be used here." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "macOS giữ ⌘Tab cho trình chuyển ứng dụng của hệ thống nên không dùng được ở đây." } }
+      }
+    },
     "Hold Option (⌥) and press Tab to flip through all open windows." : {
       "localizations" : {
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ Option (⌥) và nhấn Tab để lướt qua tất cả cửa sổ đang mở." } }

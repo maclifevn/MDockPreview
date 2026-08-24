@@ -206,6 +206,7 @@ private struct GeneralTab: View {
     let settings: AppSettings
     @State private var previewsEnabled: Bool
     @State private var switcherEnabled: Bool
+    @State private var switcherModifier: SwitcherModifier
     @State private var launchAtLogin: Bool
     @State private var showMenuBarIcon: Bool
 
@@ -213,6 +214,7 @@ private struct GeneralTab: View {
         self.settings = settings
         _previewsEnabled = State(initialValue: settings.dockPreviewEnabled)
         _switcherEnabled = State(initialValue: settings.windowSwitcherEnabled)
+        _switcherModifier = State(initialValue: settings.switcherModifier)
         _launchAtLogin = State(initialValue: LaunchAtLoginManager.isEnabled)
         _showMenuBarIcon = State(initialValue: settings.showMenuBarIcon)
     }
@@ -251,12 +253,30 @@ private struct GeneralTab: View {
                 SettingRow(
                     icon: "square.stack.3d.up", color: .orange,
                     title: "Window switcher",
-                    subtitle: "Hold Option (⌥) and press Tab to flip through all open windows."
+                    subtitle: "Flip through all open windows with a keyboard shortcut."
                 ) {
                     Toggle("", isOn: $switcherEnabled)
                         .labelsHidden().toggleStyle(.switch)
                         .onChange(of: switcherEnabled) { _, v in settings.windowSwitcherEnabled = v }
                 }
+                rowDivider
+                SettingRow(icon: "command", color: .gray, title: "Shortcut") {
+                    Picker("", selection: $switcherModifier) {
+                        ForEach(SwitcherModifier.allCases) { option in
+                            Text(option.chordLabel).tag(option)
+                        }
+                    }
+                    .labelsHidden().pickerStyle(.menu).fixedSize()
+                    .disabled(!switcherEnabled)
+                    .onChange(of: switcherModifier) { _, v in settings.switcherModifier = v }
+                }
+            }
+            if switcherModifier == .control {
+                Text("⌃ Tab may conflict with tab switching inside some apps (e.g. browsers).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 4)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             SettingsSection("Menu bar") {

@@ -10,6 +10,7 @@ final class AppSettings {
         static let hasCompletedWelcome = "hasCompletedWelcome"
         static let showMenuBarIcon = "showMenuBarIcon"
         static let windowSwitcherEnabled = "windowSwitcherEnabled"
+        static let switcherModifier = "switcherModifier"
     }
 
     /// Fired on the main actor after `dockPreviewEnabled` changes.
@@ -53,6 +54,14 @@ final class AppSettings {
         }
     }
 
+    var switcherModifier: SwitcherModifier {
+        didSet {
+            guard switcherModifier != oldValue else { return }
+            defaults.set(switcherModifier.rawValue, forKey: Key.switcherModifier)
+            onWindowSwitcherConfigChanged?()
+        }
+    }
+
     /// Whether the first-launch welcome flow has been dismissed at least once.
     var hasCompletedWelcome: Bool {
         didSet {
@@ -73,6 +82,9 @@ final class AppSettings {
             defaults.object(forKey: Key.showMenuBarIcon) as? Bool ?? true
         self.windowSwitcherEnabled =
             defaults.object(forKey: Key.windowSwitcherEnabled) as? Bool ?? true
+        self.switcherModifier =
+            SwitcherModifier(rawValue: defaults.string(forKey: Key.switcherModifier) ?? "")
+            ?? .option
         self.hasCompletedWelcome = defaults.bool(forKey: Key.hasCompletedWelcome)
     }
 }
