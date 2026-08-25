@@ -1,6 +1,10 @@
 import AppKit
 import SwiftUI
 
+private enum SettingsWindowLayout {
+    static let contentSize = NSSize(width: 540, height: 600)
+}
+
 /// Hosts the tabbed Settings window. Everything that used to live in the
 /// menu-bar menu — theme, launch at login, permissions — now lives here, plus
 /// the option to hide the menu-bar icon and an About/Donate tab.
@@ -22,13 +26,23 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             return
         }
         let root = SettingsView(settings: settings, onReopenWelcome: onReopenWelcome)
+            .frame(
+                width: SettingsWindowLayout.contentSize.width,
+                height: SettingsWindowLayout.contentSize.height
+            )
         let hosting = NSHostingController(rootView: root)
-        // Let the window follow the selected tab's natural height, so each pane
-        // fits snugly instead of sharing one tall fixed frame.
-        hosting.sizingOptions = [.preferredContentSize]
-        let window = NSWindow(contentViewController: hosting)
+        // Keep AppKit in charge of the window size. Tracking SwiftUI's ideal
+        // size here can recurse while a tab changes layout on macOS 26.
+        hosting.sizingOptions = []
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: SettingsWindowLayout.contentSize),
+            styleMask: [.titled, .closable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentViewController = hosting
+        window.setContentSize(SettingsWindowLayout.contentSize)
         window.title = NSLocalizedString("MDock Preview Settings", comment: "window title")
-        window.styleMask = [.titled, .closable, .miniaturizable]
         window.isReleasedWhenClosed = false
         window.center()
         window.delegate = self
@@ -84,9 +98,7 @@ private struct SettingsView: View {
 
             content
         }
-        // Fixed width; height follows the selected tab's content via the hosting
-        // controller's preferredContentSize sizing.
-        .frame(width: 540)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder private var content: some View {
@@ -105,12 +117,12 @@ private struct TabContainer<Content: View>: View {
     @ViewBuilder var content: Content
     init(@ViewBuilder content: () -> Content) { self.content = content() }
     var body: some View {
-        // No ScrollView: the content reports its natural height so the window
-        // can size to fit each tab exactly.
-        VStack(alignment: .leading, spacing: 18) { content }
-            .padding(22)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(nsColor: .windowBackgroundColor))
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) { content }
+                .padding(22)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(Color(nsColor: .windowBackgroundColor))
     }
 }
 

@@ -1,6 +1,10 @@
 import AppKit
 import SwiftUI
 
+private enum WelcomeWindowLayout {
+    static let contentSize = NSSize(width: 500, height: 720)
+}
+
 /// Hosts the first-launch onboarding window that walks the user through the two
 /// required privacy grants and offers to launch at login. Reopenable from
 /// Settings › Permissions.
@@ -25,11 +29,22 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
         }
 
         let root = WelcomeView(settings: settings) { [weak self] in self?.window?.close() }
+            .frame(
+                width: WelcomeWindowLayout.contentSize.width,
+                height: WelcomeWindowLayout.contentSize.height
+            )
         let hosting = NSHostingController(rootView: root)
-        // Size the window to the content's natural height so nothing is clipped.
-        hosting.sizingOptions = [.preferredContentSize]
-        let window = NSWindow(contentViewController: hosting)
-        window.styleMask = [.titled, .closable, .fullSizeContentView]
+        // The window owns its size. Feeding SwiftUI's ideal size back into the
+        // window can create an AppKit update-constraints loop on macOS 26.
+        hosting.sizingOptions = []
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: WelcomeWindowLayout.contentSize),
+            styleMask: [.titled, .closable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentViewController = hosting
+        window.setContentSize(WelcomeWindowLayout.contentSize)
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
@@ -65,38 +80,42 @@ private struct WelcomeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            hero
-            VStack(alignment: .leading, spacing: 20) {
-                section(
-                    number: 1,
-                    title: "Grant two permissions",
-                    subtitle: "Both are needed for previews to work."
-                ) {
-                    PermissionsView { granted in allGranted = granted }
-                }
+            ScrollView {
+                VStack(spacing: 0) {
+                    hero
+                    VStack(alignment: .leading, spacing: 20) {
+                        section(
+                            number: 1,
+                            title: "Grant two permissions",
+                            subtitle: "Both are needed for previews to work."
+                        ) {
+                            PermissionsView { granted in allGranted = granted }
+                        }
 
-                section(
-                    number: 2,
-                    title: "Window switcher",
-                    subtitle: "Flip through all open windows with a keyboard shortcut."
-                ) {
-                    overrideCard
-                }
+                        section(
+                            number: 2,
+                            title: "Window switcher",
+                            subtitle: "Flip through all open windows with a keyboard shortcut."
+                        ) {
+                            overrideCard
+                        }
 
-                section(
-                    number: 3,
-                    title: "Start automatically",
-                    subtitle: "Optional — keep previews always on hand."
-                ) {
-                    launchCard
+                        section(
+                            number: 3,
+                            title: "Start automatically",
+                            subtitle: "Optional — keep previews always on hand."
+                        ) {
+                            launchCard
+                        }
+                    }
+                    .padding(24)
                 }
+                .frame(maxWidth: .infinity)
             }
-            .padding(24)
             footer
         }
-        .frame(width: 500)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
-        .ignoresSafeArea()
     }
 
     // MARK: Hero
