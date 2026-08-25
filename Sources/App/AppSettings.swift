@@ -54,6 +54,8 @@ final class AppSettings {
         }
     }
 
+    /// Which shortcut opens the switcher: ⌘Tab (overrides the system app
+    /// switcher, default), ⌥Tab, or ⌃Tab.
     var switcherModifier: SwitcherModifier {
         didSet {
             guard switcherModifier != oldValue else { return }
@@ -82,9 +84,10 @@ final class AppSettings {
             defaults.object(forKey: Key.showMenuBarIcon) as? Bool ?? true
         self.windowSwitcherEnabled =
             defaults.object(forKey: Key.windowSwitcherEnabled) as? Bool ?? true
+        // Default to ⌘Tab: replace the system app switcher out of the box.
         self.switcherModifier =
             SwitcherModifier(rawValue: defaults.string(forKey: Key.switcherModifier) ?? "")
-            ?? .option
+            ?? .command
         self.hasCompletedWelcome = defaults.bool(forKey: Key.hasCompletedWelcome)
     }
 }

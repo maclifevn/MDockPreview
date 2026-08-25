@@ -1,10 +1,10 @@
 import CoreGraphics
 
-/// The holding modifier that arms the ⌥Tab-style switcher. `.command` is
-/// intentionally absent: macOS reserves ⌘Tab for its own app switcher and a
-/// session event tap cannot take it over (AltTab defaults to ⌥Tab for the same
-/// reason).
+/// The holding modifier that arms the switcher (held + Tab, release to commit).
+/// `.command` overrides the system Command-Tab app switcher — the tap consumes
+/// the real ⌘Tab keystroke, AltTab-style.
 enum SwitcherModifier: String, CaseIterable, Identifiable, Sendable {
+    case command
     case option
     case control
 
@@ -12,6 +12,7 @@ enum SwitcherModifier: String, CaseIterable, Identifiable, Sendable {
 
     var flag: CGEventFlags {
         switch self {
+        case .command: .maskCommand
         case .option: .maskAlternate
         case .control: .maskControl
         }
@@ -19,11 +20,12 @@ enum SwitcherModifier: String, CaseIterable, Identifiable, Sendable {
 
     var symbol: String {
         switch self {
+        case .command: "⌘"
         case .option: "⌥"
         case .control: "⌃"
         }
     }
 
-    /// e.g. "⌥ Tab" — shown in the shortcut picker.
+    /// e.g. "⌘ Tab" — shown in the shortcut picker.
     var chordLabel: String { "\(symbol) Tab" }
 }

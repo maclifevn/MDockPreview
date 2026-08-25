@@ -219,6 +219,14 @@ private struct GeneralTab: View {
         _showMenuBarIcon = State(initialValue: settings.showMenuBarIcon)
     }
 
+    private func switcherCaption(_ key: LocalizedStringKey) -> some View {
+        Text(key)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.leading, 4)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
     var body: some View {
         TabContainer {
             SettingsSection("Dock previews") {
@@ -262,21 +270,22 @@ private struct GeneralTab: View {
                 rowDivider
                 SettingRow(icon: "command", color: .gray, title: "Shortcut") {
                     Picker("", selection: $switcherModifier) {
-                        ForEach(SwitcherModifier.allCases) { option in
-                            Text(option.chordLabel).tag(option)
-                        }
+                        Text("⌘ Tab (replace system)").tag(SwitcherModifier.command)
+                        Text("⌥ Tab").tag(SwitcherModifier.option)
+                        Text("⌃ Tab").tag(SwitcherModifier.control)
                     }
                     .labelsHidden().pickerStyle(.menu).fixedSize()
                     .disabled(!switcherEnabled)
                     .onChange(of: switcherModifier) { _, v in settings.switcherModifier = v }
                 }
             }
-            if switcherModifier == .control {
-                Text("⌃ Tab may conflict with tab switching inside some apps (e.g. browsers).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, 4)
-                    .fixedSize(horizontal: false, vertical: true)
+            switch switcherModifier {
+            case .command:
+                switcherCaption("Replaces the macOS ⌘Tab app switcher: hold ⌘ and press Tab, release ⌘ to switch.")
+            case .control:
+                switcherCaption("⌃ Tab may conflict with tab switching inside some apps (e.g. browsers).")
+            case .option:
+                switcherCaption("Hold ⌥ and press Tab, release ⌥ to switch.")
             }
 
             SettingsSection("Menu bar") {

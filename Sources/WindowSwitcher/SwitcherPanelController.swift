@@ -124,6 +124,8 @@ private struct SwitcherView: View {
                         selected: index == model.selectedIndex,
                         theme: theme
                     )
+                    .contentShape(Rectangle())
+                    .onTapGesture { model.onSelectIndex?(index) }
                 }
             }
         }

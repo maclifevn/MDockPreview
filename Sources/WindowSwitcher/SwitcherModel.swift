@@ -19,6 +19,9 @@ final class SwitcherModel: ObservableObject {
     @Published var selectedIndex: Int = 0
     @Published var columns: Int = 1
 
+    /// Clicking a tile (and Return in custom mode) selects that index.
+    var onSelectIndex: ((Int) -> Void)?
+
     var selectedAppName: String {
         windows.indices.contains(selectedIndex) ? windows[selectedIndex].appName : ""
     }

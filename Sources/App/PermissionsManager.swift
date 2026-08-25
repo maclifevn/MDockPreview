@@ -1,6 +1,7 @@
 import AppKit
 import ApplicationServices
 import CoreGraphics
+import ScreenCaptureKit
 
 /// The dock preview needs two macOS privacy grants, both requested at runtime:
 ///
@@ -35,10 +36,20 @@ enum PermissionsManager {
         return AXIsProcessTrustedWithOptions(options)
     }
 
-    /// Shows the system Screen Recording prompt if access has not been granted.
+    /// Shows the system Screen Recording prompt and, crucially, registers the app
+    /// in the Screen Recording list. `CGRequestScreenCaptureAccess()` alone does
+    /// not always surface the app there, so we also touch ScreenCaptureKit —
+    /// the same TCC grant our thumbnails use — which reliably lists (and prompts
+    /// for) the app.
     @discardableResult
     static func requestScreenRecording() -> Bool {
-        CGRequestScreenCaptureAccess()
+        let granted = CGRequestScreenCaptureAccess()
+        Task {
+            _ = try? await SCShareableContent.excludingDesktopWindows(
+                true, onScreenWindowsOnly: true
+            )
+        }
+        return granted
     }
 
     static func openAccessibilitySettings() {

@@ -16,6 +16,71 @@
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bộ chuyển cửa sổ" } }
       }
     },
+    "⌘ Tab (replace system)" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "⌘ Tab (thay hệ thống)" } }
+      }
+    },
+    "Replaces the macOS ⌘Tab app switcher: hold ⌘ and press Tab, release ⌘ to switch." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thay trình chuyển ứng dụng ⌘Tab của macOS: giữ ⌘ và nhấn Tab, thả ⌘ để chuyển." } }
+      }
+    },
+    "Hold ⌥ and press Tab, release ⌥ to switch." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ ⌥ và nhấn Tab, thả ⌥ để chuyển." } }
+      }
+    },
+    "Override ⌘Tab" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thay thế ⌘Tab" } }
+      }
+    },
+    "Use ⌘Tab for the window switcher instead of the macOS app switcher. Turn off to use ⌥Tab." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dùng ⌘Tab cho bộ chuyển cửa sổ thay cho trình chuyển ứng dụng của macOS. Tắt để dùng ⌥Tab." } }
+      }
+    },
+    "Trigger" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kích hoạt" } }
+      }
+    },
+    "Hold + Tab" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ phím + Tab" } }
+      }
+    },
+    "Custom shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím tắt tuỳ chỉnh" } }
+      }
+    },
+    "Modifier" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím bổ trợ" } }
+      }
+    },
+    "Record Shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ghi phím tắt" } }
+      }
+    },
+    "Type shortcut…" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhấn tổ hợp phím…" } }
+      }
+    },
+    "Clear shortcut" : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xoá phím tắt" } }
+      }
+    },
+    "Press the shortcut to open, then Tab/arrows to move, Return to select, Esc to cancel." : {
+      "localizations" : {
+        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhấn phím tắt để mở, dùng Tab/mũi tên để di chuyển, Return để chọn, Esc để huỷ." } }
+      }
+    },
     "Shortcut" : {
       "localizations" : {
         "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím tắt" } }

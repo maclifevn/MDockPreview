@@ -7,10 +7,15 @@ import SwiftUI
 @MainActor
 final class WelcomeWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
+    private let settings: AppSettings
 
     /// Called when the window is dismissed, so the shell can remember that the
     /// welcome flow has been seen.
     var onFinished: (() -> Void)?
+
+    init(settings: AppSettings) {
+        self.settings = settings
+    }
 
     func show() {
         if let window {
@@ -19,15 +24,16 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
             return
         }
 
-        let root = WelcomeView { [weak self] in self?.window?.close() }
+        let root = WelcomeView(settings: settings) { [weak self] in self?.window?.close() }
         let hosting = NSHostingController(rootView: root)
+        // Size the window to the content's natural height so nothing is clipped.
+        hosting.sizingOptions = [.preferredContentSize]
         let window = NSWindow(contentViewController: hosting)
         window.styleMask = [.titled, .closable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 500, height: 640))
         window.center()
         window.delegate = self
         self.window = window
@@ -44,37 +50,51 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
 // MARK: - SwiftUI content
 
 private struct WelcomeView: View {
+    let settings: AppSettings
     let onDone: () -> Void
 
     @State private var allGranted = PermissionsManager.allGranted
     @State private var launchAtLogin = LaunchAtLoginManager.isEnabled
+    @State private var overrideCmdTab: Bool
+
+    init(settings: AppSettings, onDone: @escaping () -> Void) {
+        self.settings = settings
+        self.onDone = onDone
+        _overrideCmdTab = State(initialValue: settings.switcherModifier == .command)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             hero
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    section(
-                        number: 1,
-                        title: "Grant two permissions",
-                        subtitle: "Both are needed for previews to work."
-                    ) {
-                        PermissionsView { granted in allGranted = granted }
-                    }
-
-                    section(
-                        number: 2,
-                        title: "Start automatically",
-                        subtitle: "Optional — keep previews always on hand."
-                    ) {
-                        launchCard
-                    }
+            VStack(alignment: .leading, spacing: 20) {
+                section(
+                    number: 1,
+                    title: "Grant two permissions",
+                    subtitle: "Both are needed for previews to work."
+                ) {
+                    PermissionsView { granted in allGranted = granted }
                 }
-                .padding(24)
+
+                section(
+                    number: 2,
+                    title: "Window switcher",
+                    subtitle: "Flip through all open windows with a keyboard shortcut."
+                ) {
+                    overrideCard
+                }
+
+                section(
+                    number: 3,
+                    title: "Start automatically",
+                    subtitle: "Optional — keep previews always on hand."
+                ) {
+                    launchCard
+                }
             }
+            .padding(24)
             footer
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(width: 500)
         .background(Color(nsColor: .windowBackgroundColor))
         .ignoresSafeArea()
     }
@@ -128,6 +148,29 @@ private struct WelcomeView: View {
             content()
                 .padding(.leading, 2)
         }
+    }
+
+    private var overrideCard: some View {
+        Toggle(isOn: Binding(
+            get: { overrideCmdTab },
+            set: { newValue in
+                overrideCmdTab = newValue
+                settings.switcherModifier = newValue ? .command : .option
+            }
+        )) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Override ⌘Tab").font(.body.weight(.medium))
+                Text("Use ⌘Tab for the window switcher instead of the macOS app switcher. Turn off to use ⌥Tab.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .toggleStyle(.switch)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 12).fill(.quaternary.opacity(0.35))
+        )
     }
 
     private var launchCard: some View {

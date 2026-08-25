@@ -1,8 +1,9 @@
 import AppKit
 
-/// Orchestrates the ⌥Tab window switcher: owns the hotkey tap and the panel,
-/// builds the window list on demand, fills thumbnails asynchronously, and raises
-/// the chosen window on commit. Reuses `DockAXWorker` for the AX raise.
+/// Orchestrates the window switcher: a held modifier (⌘/⌥/⌃) + Tab opens a
+/// centered grid of live thumbnails; Tab/Shift+Tab cycles; releasing the
+/// modifier raises the selection. A tile can also be clicked. Reuses the theme
+/// store, ScreenCaptureKit thumbnailing, and `DockAXWorker` raise.
 @MainActor
 final class WindowSwitcherController {
     private let settings: AppSettings
@@ -17,9 +18,10 @@ final class WindowSwitcherController {
 
     init(settings: AppSettings) {
         self.settings = settings
+        panel.model.onSelectIndex = { [weak self] index in self?.select(index: index) }
     }
 
-    /// Rebuilds the hotkey tap so a changed modifier (⌥/⌘/⌃) takes effect.
+    /// Rebuilds the hotkey tap so a changed shortcut (⌘/⌥/⌃) takes effect.
     func applySettings() {
         hotkey?.stop()
         hotkey = nil
@@ -41,7 +43,7 @@ final class WindowSwitcherController {
         hide()
     }
 
-    // MARK: - Hotkey actions (main actor)
+    // MARK: - Actions
 
     private func step(forward: Bool) {
         if active { advance(forward: forward) } else { present(forward: forward) }
@@ -54,7 +56,7 @@ final class WindowSwitcherController {
 
         panel.model.windows = windows
         let count = windows.count
-        // Alt-Tab lands on the previous window first, not the current one.
+        // Land on the previous window first, like a native switcher.
         panel.model.selectedIndex = count > 1 ? (forward ? 1 : count - 1) : 0
 
         active = true
@@ -68,6 +70,12 @@ final class WindowSwitcherController {
         guard count > 0 else { return }
         let current = panel.model.selectedIndex
         panel.model.selectedIndex = ((current + (forward ? 1 : -1)) % count + count) % count
+    }
+
+    private func select(index: Int) {
+        guard active, panel.model.windows.indices.contains(index) else { return }
+        panel.model.selectedIndex = index
+        commit()
     }
 
     private func commit() {
@@ -84,9 +92,7 @@ final class WindowSwitcherController {
         hide()
     }
 
-    private func cancel() {
-        hide()
-    }
+    private func cancel() { hide() }
 
     private func hide() {
         guard active else { return }
@@ -121,7 +127,6 @@ final class WindowSwitcherController {
         }
     }
 
-    /// Capture the highlighted tile first so it looks instant, then the rest.
     private func captureOrder() -> [Int] {
         let count = panel.model.windows.count
         let selected = panel.model.selectedIndex

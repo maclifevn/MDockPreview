@@ -7,7 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var dockPreviewController = DockPreviewController(settings: settings)
     private let statusItemController = StatusItemController()
     private lazy var windowSwitcherController = WindowSwitcherController(settings: settings)
-    private let welcomeController = WelcomeWindowController()
+    private lazy var welcomeController = WelcomeWindowController(settings: settings)
     private lazy var settingsController = SettingsWindowController(
         settings: settings,
         onReopenWelcome: { [weak self] in self?.welcomeController.show() }
