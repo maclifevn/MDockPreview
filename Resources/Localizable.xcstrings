@@ -1,346 +1,616 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "About" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giới thiệu" } }
-      }
-    },
-    "Dock previews" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Preview trên Dock" } }
-      }
-    },
-    "Window switcher" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bộ chuyển cửa sổ" } }
-      }
-    },
-    "⌘ Tab (replace system)" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "⌘ Tab (thay hệ thống)" } }
-      }
-    },
-    "Replaces the macOS ⌘Tab app switcher: hold ⌘ and press Tab, release ⌘ to switch." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thay trình chuyển ứng dụng ⌘Tab của macOS: giữ ⌘ và nhấn Tab, thả ⌘ để chuyển." } }
-      }
-    },
-    "Hold ⌥ and press Tab, release ⌥ to switch." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ ⌥ và nhấn Tab, thả ⌥ để chuyển." } }
-      }
-    },
-    "Override ⌘Tab" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thay thế ⌘Tab" } }
-      }
-    },
-    "Use ⌘Tab for the window switcher instead of the macOS app switcher. Turn off to use ⌥Tab." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Dùng ⌘Tab cho bộ chuyển cửa sổ thay cho trình chuyển ứng dụng của macOS. Tắt để dùng ⌥Tab." } }
-      }
-    },
-    "Trigger" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Kích hoạt" } }
-      }
-    },
-    "Hold + Tab" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ phím + Tab" } }
-      }
-    },
-    "Custom shortcut" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím tắt tuỳ chỉnh" } }
-      }
-    },
-    "Modifier" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím bổ trợ" } }
-      }
-    },
-    "Record Shortcut" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ghi phím tắt" } }
-      }
-    },
-    "Type shortcut…" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhấn tổ hợp phím…" } }
-      }
-    },
-    "Clear shortcut" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xoá phím tắt" } }
-      }
-    },
-    "Press the shortcut to open, then Tab/arrows to move, Return to select, Esc to cancel." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nhấn phím tắt để mở, dùng Tab/mũi tên để di chuyển, Return để chọn, Esc để huỷ." } }
-      }
-    },
-    "Shortcut" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phím tắt" } }
-      }
-    },
-    "Flip through all open windows with a keyboard shortcut." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Lướt qua tất cả cửa sổ đang mở bằng một phím tắt." } }
-      }
-    },
-    "⌃ Tab may conflict with tab switching inside some apps (e.g. browsers)." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "⌃ Tab có thể xung đột với phím chuyển tab trong một số ứng dụng (ví dụ trình duyệt)." } }
-      }
-    },
-    "macOS reserves ⌘Tab for its own app switcher, so it can't be used here." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "macOS giữ ⌘Tab cho trình chuyển ứng dụng của hệ thống nên không dùng được ở đây." } }
-      }
-    },
-    "Hold Option (⌥) and press Tab to flip through all open windows." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giữ Option (⌥) và nhấn Tab để lướt qua tất cả cửa sổ đang mở." } }
-      }
-    },
-    "If hidden, relaunch the app to reopen Settings" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nếu ẩn, hãy khởi chạy lại ứng dụng để mở lại Cài đặt" } }
-      }
-    },
-    "Menu bar" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thanh menu" } }
-      }
-    },
-    "Required permissions" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quyền cần thiết" } }
-      }
-    },
-    "Show a preview panel when you hover a Dock icon" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hiện bảng preview khi rê chuột lên biểu tượng trên Dock" } }
-      }
-    },
-    "Accessibility" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Trợ năng" } }
-      }
-    },
-    "All set — previews are ready." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã xong — preview sẵn sàng." } }
-      }
-    },
-    "Appearance" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Giao diện" } }
-      }
-    },
-    "Applies to the window-preview panel. Changes take effect immediately." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Áp dụng cho bảng preview cửa sổ. Thay đổi có hiệu lực ngay lập tức." } }
-      }
-    },
-    "Both are needed for previews to work." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cả hai đều cần để preview hoạt động." } }
-      }
-    },
-    "Close Window" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đóng cửa sổ" } }
-      }
-    },
-    "Continue" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tiếp tục" } }
-      }
-    },
-    "Donation QR code" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mã QR ủng hộ" } }
-      }
-    },
-    "General" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chung" } }
-      }
-    },
-    "Grant" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cấp quyền" } }
-      }
-    },
-    "Grant two permissions" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cấp hai quyền" } }
-      }
-    },
-    "Granted" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đã cấp" } }
-      }
-    },
-    "If MDock Preview is useful to you, a small coffee helps keep the project maintained and growing. Thank you! 🙏" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nếu MDock Preview hữu ích với bạn, một ly cà phê nhỏ sẽ giúp dự án được duy trì và phát triển. Cảm ơn bạn! 🙏" } }
-      }
-    },
-    "If you hide the menu-bar icon, reopen this window by launching MDock Preview again." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Nếu ẩn biểu tượng thanh menu, hãy mở lại cửa sổ này bằng cách khởi chạy MDock Preview lần nữa." } }
-      }
-    },
-    "Launch at login" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Khởi động cùng hệ thống" } }
-      }
-    },
-    "Lets the app notice the pointer over the Dock and switch or close windows you pick." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cho phép ứng dụng nhận biết con trỏ trên Dock và chuyển hoặc đóng cửa sổ bạn chọn." } }
-      }
-    },
-    "Lets the app render the live thumbnail of each window in the preview." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cho phép ứng dụng hiển thị ảnh thu nhỏ trực tiếp của từng cửa sổ trong preview." } }
-      }
-    },
-    "Live window previews from your Dock." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Preview cửa sổ trực tiếp ngay từ Dock." } }
-      }
-    },
-    "Live window previews when you hover a Dock icon." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Preview cửa sổ trực tiếp khi bạn rê chuột lên biểu tượng trên Dock." } }
-      }
-    },
-    "Made with ❤️ for" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Được tạo với ❤️ cho" } }
-      }
-    },
-    "MDock Preview needs these to show live window previews. Toggle them in System Settings and the status updates here automatically." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "MDock Preview cần các quyền này để hiển thị preview cửa sổ trực tiếp. Bật chúng trong Cài đặt Hệ thống, trạng thái ở đây sẽ tự cập nhật." } }
-      }
-    },
-    "MDock Preview Settings" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cài đặt MDock Preview" } }
-      }
-    },
-    "Needed" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cần cấp" } }
-      }
-    },
-    "Open MDock Preview automatically when you sign in." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tự động mở MDock Preview khi bạn đăng nhập." } }
-      }
-    },
-    "Open Setup Guide" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Mở hướng dẫn cài đặt" } }
-      }
-    },
-    "Optional — keep previews always on hand." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tùy chọn — luôn sẵn preview khi cần." } }
-      }
-    },
-    "Permissions" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quyền" } }
-      }
-    },
-    "Preview" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Xem trước" } }
-      }
-    },
-    "Preview theme" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chủ đề preview" } }
-      }
-    },
-    "Quit MDock Preview" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thoát MDock Preview" } }
-      }
-    },
-    "Relaunch App" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Khởi động lại ứng dụng" } }
-      }
-    },
-    "Scan with MoMo or a banking app (VietQR · Napas 247)" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Quét bằng MoMo hoặc ứng dụng ngân hàng (VietQR · Napas 247)" } }
-      }
-    },
-    "Screen Recording" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ghi màn hình" } }
-      }
-    },
-    "Settings…" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cài đặt…" } }
-      }
-    },
-    "Show icon in menu bar" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hiện biểu tượng trên thanh menu" } }
-      }
-    },
-    "Show window previews" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Hiện preview cửa sổ" } }
-      }
-    },
-    "Start automatically" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tự động khởi động" } }
-      }
-    },
-    "Start Using MDock Preview" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bắt đầu dùng MDock Preview" } }
-      }
-    },
-    "Support development ☕" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Ủng hộ phát triển ☕" } }
-      }
-    },
-    "Untitled Window" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Cửa sổ không tên" } }
-      }
-    },
-    "Version %@ (%@)" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Phiên bản %@ (%@)" } }
-      }
-    },
-    "Welcome to MDock Preview" : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Chào mừng đến với MDock Preview" } }
-      }
+  "sourceLanguage": "en",
+  "strings": {
+    "About": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giới thiệu"
+          }
+        }
+      }
+    },
+    "Dock previews": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview trên Dock"
+          }
+        }
+      }
+    },
+    "Window switcher": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ chuyển cửa sổ"
+          }
+        }
+      }
+    },
+    "⌘ Tab (replace system)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌘ Tab (thay hệ thống)"
+          }
+        }
+      }
+    },
+    "Replaces the macOS ⌘Tab app switcher: hold ⌘ and press Tab, release ⌘ to switch.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thay trình chuyển ứng dụng ⌘Tab của macOS: giữ ⌘ và nhấn Tab, thả ⌘ để chuyển."
+          }
+        }
+      }
+    },
+    "Hold ⌥ and press Tab, release ⌥ to switch.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ ⌥ và nhấn Tab, thả ⌥ để chuyển."
+          }
+        }
+      }
+    },
+    "Override ⌘Tab": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thay thế ⌘Tab"
+          }
+        }
+      }
+    },
+    "Use ⌘Tab for the window switcher instead of the macOS app switcher. Turn off to use ⌥Tab.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dùng ⌘Tab cho bộ chuyển cửa sổ thay cho trình chuyển ứng dụng của macOS. Tắt để dùng ⌥Tab."
+          }
+        }
+      }
+    },
+    "Press the shortcut to open, then Tab/arrows to move, Return to select, Esc to cancel.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhấn phím tắt để mở, dùng Tab/mũi tên để di chuyển, Return để chọn, Esc để huỷ."
+          }
+        }
+      }
+    },
+    "Shortcut": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phím tắt"
+          }
+        }
+      }
     },
-    "You can grant permissions now or later from Settings." : {
-      "localizations" : {
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bạn có thể cấp quyền ngay bây giờ hoặc sau này trong Cài đặt." } }
+    "Flip through all open windows with a keyboard shortcut.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lướt qua tất cả cửa sổ đang mở bằng một phím tắt."
+          }
+        }
+      }
+    },
+    "⌃ Tab may conflict with tab switching inside some apps (e.g. browsers).": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⌃ Tab có thể xung đột với phím chuyển tab trong một số ứng dụng (ví dụ trình duyệt)."
+          }
+        }
+      }
+    },
+    "macOS reserves ⌘Tab for its own app switcher, so it can't be used here.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS giữ ⌘Tab cho trình chuyển ứng dụng của hệ thống nên không dùng được ở đây."
+          }
+        }
+      }
+    },
+    "Hold Option (⌥) and press Tab to flip through all open windows.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giữ Option (⌥) và nhấn Tab để lướt qua tất cả cửa sổ đang mở."
+          }
+        }
+      }
+    },
+    "If hidden, relaunch the app to reopen Settings": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nếu ẩn, hãy khởi chạy lại ứng dụng để mở lại Cài đặt"
+          }
+        }
+      }
+    },
+    "Menu bar": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanh menu"
+          }
+        }
+      }
+    },
+    "Required permissions": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quyền cần thiết"
+          }
+        }
+      }
+    },
+    "Show a preview panel when you hover a Dock icon": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện bảng preview khi rê chuột lên biểu tượng trên Dock"
+          }
+        }
+      }
+    },
+    "Accessibility": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trợ năng"
+          }
+        }
+      }
+    },
+    "All set — previews are ready.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xong — preview sẵn sàng."
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao diện"
+          }
+        }
+      }
+    },
+    "Applies to the window-preview panel. Changes take effect immediately.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Áp dụng cho bảng preview cửa sổ. Thay đổi có hiệu lực ngay lập tức."
+          }
+        }
+      }
+    },
+    "Both are needed for previews to work.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cả hai đều cần để preview hoạt động."
+          }
+        }
+      }
+    },
+    "Close Window": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đóng cửa sổ"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiếp tục"
+          }
+        }
+      }
+    },
+    "Donation QR code": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã QR ủng hộ"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chung"
+          }
+        }
+      }
+    },
+    "Grant": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấp quyền"
+          }
+        }
+      }
+    },
+    "Grant two permissions": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cấp hai quyền"
+          }
+        }
+      }
+    },
+    "Granted": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã cấp"
+          }
+        }
+      }
+    },
+    "If MDock Preview is useful to you, a small coffee helps keep the project maintained and growing. Thank you! 🙏": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nếu MDock Preview hữu ích với bạn, một ly cà phê nhỏ sẽ giúp dự án được duy trì và phát triển. Cảm ơn bạn! 🙏"
+          }
+        }
+      }
+    },
+    "If you hide the menu-bar icon, reopen this window by launching MDock Preview again.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nếu ẩn biểu tượng thanh menu, hãy mở lại cửa sổ này bằng cách khởi chạy MDock Preview lần nữa."
+          }
+        }
+      }
+    },
+    "Launch at login": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động cùng hệ thống"
+          }
+        }
+      }
+    },
+    "Lets the app notice the pointer over the Dock and switch or close windows you pick.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cho phép ứng dụng nhận biết con trỏ trên Dock và chuyển hoặc đóng cửa sổ bạn chọn."
+          }
+        }
+      }
+    },
+    "Lets the app render the live thumbnail of each window in the preview.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cho phép ứng dụng hiển thị ảnh thu nhỏ trực tiếp của từng cửa sổ trong preview."
+          }
+        }
+      }
+    },
+    "Live window previews from your Dock.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview cửa sổ trực tiếp ngay từ Dock."
+          }
+        }
+      }
+    },
+    "Live window previews when you hover a Dock icon.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview cửa sổ trực tiếp khi bạn rê chuột lên biểu tượng trên Dock."
+          }
+        }
+      }
+    },
+    "Made with ❤️ for": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Được tạo với ❤️ cho"
+          }
+        }
+      }
+    },
+    "MDock Preview needs these to show live window previews. Toggle them in System Settings and the status updates here automatically.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MDock Preview cần các quyền này để hiển thị preview cửa sổ trực tiếp. Bật chúng trong Cài đặt Hệ thống, trạng thái ở đây sẽ tự cập nhật."
+          }
+        }
+      }
+    },
+    "MDock Preview Settings": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt MDock Preview"
+          }
+        }
+      }
+    },
+    "Needed": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cần cấp"
+          }
+        }
+      }
+    },
+    "Open MDock Preview automatically when you sign in.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự động mở MDock Preview khi bạn đăng nhập."
+          }
+        }
+      }
+    },
+    "Open Setup Guide": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở hướng dẫn cài đặt"
+          }
+        }
+      }
+    },
+    "Optional — keep previews always on hand.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tùy chọn — luôn sẵn preview khi cần."
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quyền"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xem trước"
+          }
+        }
+      }
+    },
+    "Preview theme": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chủ đề preview"
+          }
+        }
+      }
+    },
+    "Quit MDock Preview": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thoát MDock Preview"
+          }
+        }
+      }
+    },
+    "Relaunch App": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại ứng dụng"
+          }
+        }
+      }
+    },
+    "Scan with MoMo or a banking app (VietQR · Napas 247)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét bằng MoMo hoặc ứng dụng ngân hàng (VietQR · Napas 247)"
+          }
+        }
+      }
+    },
+    "Screen Recording": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi màn hình"
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt…"
+          }
+        }
+      }
+    },
+    "Show icon in menu bar": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện biểu tượng trên thanh menu"
+          }
+        }
+      }
+    },
+    "Show window previews": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiện preview cửa sổ"
+          }
+        }
+      }
+    },
+    "Start automatically": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tự động khởi động"
+          }
+        }
+      }
+    },
+    "Start Using MDock Preview": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bắt đầu dùng MDock Preview"
+          }
+        }
+      }
+    },
+    "Support development ☕": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ủng hộ phát triển ☕"
+          }
+        }
+      }
+    },
+    "Untitled Window": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cửa sổ không tên"
+          }
+        }
+      }
+    },
+    "Version %@ (%@)": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản %@ (%@)"
+          }
+        }
+      }
+    },
+    "Welcome to MDock Preview": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chào mừng đến với MDock Preview"
+          }
+        }
+      }
+    },
+    "You can grant permissions now or later from Settings.": {
+      "localizations": {
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn có thể cấp quyền ngay bây giờ hoặc sau này trong Cài đặt."
+          }
+        }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

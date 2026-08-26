@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 private enum WelcomeWindowLayout {
-    static let contentSize = NSSize(width: 500, height: 720)
+    static let contentSize = NSSize(width: 500, height: 770)
 }
 
 /// Hosts the first-launch onboarding window that walks the user through the two
