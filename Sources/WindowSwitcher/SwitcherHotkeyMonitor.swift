@@ -57,6 +57,10 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
         var runLoop: CFRunLoop?
         var tap: CFMachPort?
         lock.lock()
+        // `stop()` can race the worker before it publishes its run loop. Mark
+        // this instance terminal so a late-starting worker cannot install a
+        // ghost event tap after the controller has already replaced it.
+        terminated = true
         runLoop = eventRunLoop
         tap = eventTap
         thread = nil
@@ -79,6 +83,9 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
                 userInfo: Unmanaged.passUnretained(self).toOpaque()
             ) else {
                 Self.log.error("Could not create switcher key event tap")
+                lock.lock()
+                thread = nil
+                lock.unlock()
                 return
             }
             let source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
@@ -89,7 +96,14 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
             eventRunLoop = runLoop
             let go = !terminated
             lock.unlock()
-            guard go else { return }
+            guard go else {
+                lock.lock()
+                eventTap = nil
+                runLoopSource = nil
+                eventRunLoop = nil
+                lock.unlock()
+                return
+            }
 
             CFRunLoopAddSource(runLoop, source, .commonModes)
             CGEvent.tapEnable(tap: tap, enable: true)
@@ -109,6 +123,13 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
     func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
+            let shouldCancel = engaged
+            engaged = false
+            modifierDown = false
+            if shouldCancel {
+                let cancel = onCancel
+                dispatchToMain { cancel() }
+            }
             lock.lock(); let tap = eventTap; lock.unlock()
             if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
             return Unmanaged.passUnretained(event)
@@ -118,7 +139,7 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
             if modifierDown, !nowModifier, engaged {
                 engaged = false
                 let commit = onCommit
-                Task { @MainActor in commit() }
+                dispatchToMain { commit() }
             }
             modifierDown = nowModifier
             return Unmanaged.passUnretained(event)
@@ -130,13 +151,13 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
                 engaged = true
                 modifierDown = true
                 let step = onStep
-                Task { @MainActor in step(forward) }
+                dispatchToMain { step(forward) }
                 return nil
             }
             if code == escKeyCode, engaged {
                 engaged = false
                 let cancel = onCancel
-                Task { @MainActor in cancel() }
+                dispatchToMain { cancel() }
                 return nil
             }
             return Unmanaged.passUnretained(event)
@@ -148,6 +169,23 @@ final class SwitcherHotkeyMonitor: @unchecked Sendable {
 
         default:
             return Unmanaged.passUnretained(event)
+        }
+    }
+
+    /// GCD preserves submission order from the event-tap thread. That matters
+    /// for a fast press-and-release: the initial step must reach the main actor
+    /// before the modifier-release commit, or the commit sees no active panel
+    /// and the later step leaves it stuck open.
+    private func dispatchToMain(
+        _ action: @escaping @MainActor @Sendable () -> Void
+    ) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.lock.lock()
+            let isActive = !self.terminated
+            self.lock.unlock()
+            guard isActive else { return }
+            action()
         }
     }
 }

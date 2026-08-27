@@ -64,6 +64,11 @@ enum DockAXResolver {
     private static let dockHitTestTimeout: Float = 0.03
     private static let applicationTimeout: Float = 0.15
     private static let windowTimeout: Float = 0.03
+    // A click/keyboard commit is user-initiated and must favor reliability over
+    // hover latency. Chrome can miss the 30 ms discovery budget while a busy
+    // profile is painting; half a second still bounds an unresponsive AX server
+    // without making a valid selection flaky.
+    private static let actionTimeout: Float = 0.5
 
     /// Hit-tests inside the Dock process only. A system-wide hit-test at a
     /// generously padded screen edge can land in Excel (or any other app under
@@ -188,7 +193,7 @@ enum DockAXResolver {
     @discardableResult
     static func raise(_ window: DockAXWindowResolution) -> Bool {
         guard AccessibilityPermission.isTrusted else { return false }
-        AXUIElementSetMessagingTimeout(window.element, applicationTimeout)
+        AXUIElementSetMessagingTimeout(window.element, actionTimeout)
         if window.snapshot.isMinimized,
            AXUIElementSetAttributeValue(
                window.element,
@@ -207,6 +212,52 @@ enum DockAXResolver {
             kCFBooleanTrue
         )
         return true
+    }
+
+    /// Resolves one window by its CGWindowID inside the app's accessibility tree
+    /// and raises it. The window switcher builds its list from CGWindowList, not
+    /// from `windows(processIdentifier:limit:)`, so `DockAXWorker` holds no
+    /// cached resolution to reuse — the element is looked up on demand here.
+    /// Without this, raising falls back to activating the app by PID, which
+    /// cannot pick among several windows that share one process (for example
+    /// multiple Google Chrome profile windows), so the selection never comes up.
+    @discardableResult
+    static func raise(
+        processIdentifier: pid_t,
+        windowID: CGWindowID
+    ) -> Bool {
+        guard AccessibilityPermission.isTrusted else { return false }
+        let application = AXUIElementCreateApplication(processIdentifier)
+        AXUIElementSetMessagingTimeout(application, actionTimeout)
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            application,
+            kAXWindowsAttribute as CFString,
+            &value
+        ) == .success, let axWindows = value as? [AXUIElement] else { return false }
+
+        for element in axWindows {
+            // ID resolution is part of an explicit selection, not a hover
+            // probe. Give each candidate the normal application budget instead
+            // of the deliberately aggressive 30 ms preview budget.
+            AXUIElementSetMessagingTimeout(element, applicationTimeout)
+            var resolvedID: CGWindowID = 0
+            guard _AXUIElementGetWindow(element, &resolvedID) == .success,
+                  resolvedID == windowID else { continue }
+            let isMinimized = boolAttribute(
+                element,
+                kAXMinimizedAttribute as CFString
+            ) ?? false
+            return raise(DockAXWindowResolution(
+                snapshot: DockAXWindow(
+                    windowID: windowID,
+                    title: nil,
+                    isMinimized: isMinimized
+                ),
+                element: element
+            ))
+        }
+        return false
     }
 
     /// Presses the window's real close button. This intentionally does not

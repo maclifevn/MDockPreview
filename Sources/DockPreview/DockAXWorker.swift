@@ -19,6 +19,10 @@ final class DockAXWorker: @unchecked Sendable {
         Int
     ) -> [DockAXWindowResolution]
     typealias WindowRaiser = @Sendable (DockAXWindowResolution) -> Bool
+    /// Resolves and raises a window straight from a (pid, windowID) pair when no
+    /// cached resolution exists — the window switcher's path, which never runs a
+    /// preceding `submitWindows`.
+    typealias WindowRaiserByID = @Sendable (pid_t, CGWindowID) -> Bool
     typealias WindowCloser = @Sendable (DockAXWindowResolution) -> Bool
 
     typealias TargetCompletion = @MainActor @Sendable (
@@ -29,7 +33,7 @@ final class DockAXWorker: @unchecked Sendable {
         UInt64,
         [DockAXWindow]
     ) -> Void
-    typealias RaiseCompletion = @MainActor @Sendable () -> Void
+    typealias RaiseCompletion = @MainActor @Sendable (Bool) -> Void
     typealias CloseCompletion = @MainActor @Sendable (Bool) -> Void
 
     private struct TargetRequest: @unchecked Sendable {
@@ -73,13 +77,14 @@ final class DockAXWorker: @unchecked Sendable {
     }
 
     private let queue = DispatchQueue(
-        label: "com.maclife.mfinder.dock-preview.ax",
+        label: "com.maclife.mdockpreview.dock-preview.ax",
         qos: .userInitiated
     )
     private let lock = NSLock()
     private let targetResolver: TargetResolver
     private let windowResolver: WindowResolver
     private let windowRaiser: WindowRaiser
+    private let windowRaiserByID: WindowRaiserByID
     private let windowCloser: WindowCloser
 
     private var isDraining = false
@@ -105,6 +110,9 @@ final class DockAXWorker: @unchecked Sendable {
         windowRaiser: @escaping WindowRaiser = {
             DockAXResolver.raise($0)
         },
+        windowRaiserByID: @escaping WindowRaiserByID = {
+            DockAXResolver.raise(processIdentifier: $0, windowID: $1)
+        },
         windowCloser: @escaping WindowCloser = {
             DockAXResolver.close($0)
         }
@@ -112,6 +120,7 @@ final class DockAXWorker: @unchecked Sendable {
         self.targetResolver = targetResolver
         self.windowResolver = windowResolver
         self.windowRaiser = windowRaiser
+        self.windowRaiserByID = windowRaiserByID
         self.windowCloser = windowCloser
     }
 
@@ -258,9 +267,18 @@ final class DockAXWorker: @unchecked Sendable {
                 )
                 let resolution = resolvedWindows[key]
                 let raise = windowRaiser
+                let raiseByID = windowRaiserByID
+                // The Dock preview seeds `resolvedWindows` with a prior
+                // `submitWindows`, so its raise reuses that element. The window
+                // switcher lists windows from CGWindowList and has no such
+                // cache, so fall back to resolving the element on demand from
+                // the (pid, windowID); otherwise the raise no-ops and only the
+                // app is activated, which cannot pick among several windows of
+                // one process (multiple Chrome profile windows, say).
+                //
                 // An AX action against another process is a MIG round trip that
                 // process services on its own main thread, so it stays here off
-                // the main thread. Against MFinder's own windows there is no
+                // the main thread. Against MDock Preview's own windows there is no
                 // round trip: AXUIElementPerformAction dispatches straight into
                 // AppKit on the calling thread, and -[NSWindow makeKeyAndOrderFront:]
                 // traps on macOS 26 when that thread is not the main one.
@@ -268,13 +286,29 @@ final class DockAXWorker: @unchecked Sendable {
                 // that the off-main discovery path was protecting.
                 if request.processIdentifier == ProcessInfo.processInfo.processIdentifier {
                     Task { @MainActor in
-                        if let resolution { _ = raise(resolution) }
-                        request.completion()
+                        let succeeded: Bool
+                        if let resolution {
+                            succeeded = raise(resolution)
+                        } else {
+                            succeeded = raiseByID(
+                                request.processIdentifier,
+                                request.windowID
+                            )
+                        }
+                        request.completion(succeeded)
                     }
                 } else {
-                    if let resolution { _ = raise(resolution) }
+                    let succeeded: Bool
+                    if let resolution {
+                        succeeded = raise(resolution)
+                    } else {
+                        succeeded = raiseByID(
+                            request.processIdentifier,
+                            request.windowID
+                        )
+                    }
                     Task { @MainActor in
-                        request.completion()
+                        request.completion(succeeded)
                     }
                 }
 
@@ -285,7 +319,7 @@ final class DockAXWorker: @unchecked Sendable {
                 )
                 let resolution = resolvedWindows[key]
                 let close = windowCloser
-                // MFinder owns AppKit objects for its own windows, so their
+                // MDock Preview owns AppKit objects for its own windows, so their
                 // close buttons must be pressed on the main actor. Other apps
                 // service AX on their process and stay off our main thread.
                 if request.processIdentifier

@@ -77,7 +77,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func wireStatusItem() {
         // Suspend discovery while our own menu owns event tracking, exactly as
-        // MFinder suspends it while its status menu is open.
+        // MDock Preview suspends it while its status menu is open.
         statusItemController.onMenuTrackingChanged = { [weak self] isTracking in
             self?.dockPreviewController.setSuspended(isTracking)
         }

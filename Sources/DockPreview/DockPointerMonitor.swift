@@ -98,7 +98,7 @@ struct DockHoverSampler {
 /// Observes mouse movement without putting it on AppKit's main event path.
 ///
 /// A physical mouse can generate hundreds of events per second. Installing
-/// `NSEvent` monitors for those events makes MFinder participate in every
+/// `NSEvent` monitors for those events makes MDock Preview participate in every
 /// main-thread menu-tracking iteration, even when the pointer is nowhere near
 /// the Dock. This listen-only event tap lives on its own run loop instead.
 ///
@@ -110,7 +110,7 @@ final class DockPointerMonitor: @unchecked Sendable {
     typealias MoveHandler = @MainActor @Sendable (DockPointerEvent) -> Void
 
     private static let log = Logger(
-        subsystem: "com.maclife.mfinder",
+        subsystem: "com.maclife.mdockpreview",
         category: "dock-pointer"
     )
     private static let hoverSampleInterval: CFTimeInterval = 0.08
@@ -176,7 +176,7 @@ final class DockPointerMonitor: @unchecked Sendable {
             let thread = Thread { [weak self] in
                 self?.runEventLoop()
             }
-            thread.name = "MFinder Dock Pointer"
+            thread.name = "MDock Preview Dock Pointer"
             thread.qualityOfService = .userInteractive
             eventThread = thread
             threadToStart = thread

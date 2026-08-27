@@ -377,7 +377,7 @@ final class DockPreviewController {
     }
 
     private static let log = Logger(
-        subsystem: "com.maclife.mfinder",
+        subsystem: "com.maclife.mdockpreview",
         category: "dock-preview"
     )
     private static let immediateThumbnailCount = 3
@@ -471,7 +471,7 @@ final class DockPreviewController {
         pendingBundleIdentifier = nil
     }
 
-    /// Suspend discovery while MFinder's status menu is open. AX itself runs
+    /// Suspend discovery while MDock Preview's status menu is open. AX itself runs
     /// off-main, but skipping obsolete probes avoids needless worker traffic
     /// and stale callbacks while AppKit owns menu tracking.
     func setSuspended(_ suspended: Bool) {
@@ -1335,7 +1335,7 @@ final class DockPreviewController {
         axWorker.submitRaise(
             processIdentifier: target.processIdentifier,
             windowID: windowID
-        ) {
+        ) { _ in
             NSRunningApplication(processIdentifier: target.processIdentifier)?
                 .activate(options: [])
         }

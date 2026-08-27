@@ -1,4 +1,5 @@
 import AppKit
+import os
 
 /// Orchestrates the window switcher: a held modifier (⌘/⌥/⌃) + Tab opens a
 /// centered grid of live thumbnails; Tab/Shift+Tab cycles; releasing the
@@ -6,6 +7,11 @@ import AppKit
 /// store, ScreenCaptureKit thumbnailing, and `DockAXWorker` raise.
 @MainActor
 final class WindowSwitcherController {
+    private static let log = Logger(
+        subsystem: "com.maclife.mdockpreview",
+        category: "window-switcher"
+    )
+
     private let settings: AppSettings
     private let panel = SwitcherPanelController()
     private let axWorker = DockAXWorker()
@@ -85,8 +91,14 @@ final class WindowSwitcherController {
             let window = panel.model.windows[index]
             let pid = window.processIdentifier
             let windowID = window.id
-            axWorker.submitRaise(processIdentifier: pid, windowID: windowID) {
-                NSRunningApplication(processIdentifier: pid)?.activate(options: [])
+            axWorker.submitRaise(processIdentifier: pid, windowID: windowID) { raised in
+                let activated = NSRunningApplication(processIdentifier: pid)?
+                    .activate(options: []) ?? false
+                if !raised || !activated {
+                    Self.log.error(
+                        "Window selection incomplete pid=\(pid) window=\(windowID) raised=\(raised) activated=\(activated)"
+                    )
+                }
             }
         }
         hide()
