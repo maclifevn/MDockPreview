@@ -4,11 +4,16 @@ import ScreenCaptureKit
 /// main actor so the non-Sendable `SCWindow` descriptors never cross actors.
 @MainActor
 enum SwitcherThumbnailer {
-    /// Maps every on-screen window id to its ScreenCaptureKit descriptor.
-    static func shareableWindows() async -> [CGWindowID: SCWindow] {
+    /// Maps available window ids to their ScreenCaptureKit descriptors. The
+    /// extended pass includes other Spaces and minimized windows so newly
+    /// discovered switcher tiles can receive thumbnails where macOS provides
+    /// them.
+    static func shareableWindows(
+        onScreenOnly: Bool
+    ) async -> [CGWindowID: SCWindow] {
         do {
             let content = try await SCShareableContent.excludingDesktopWindows(
-                true, onScreenWindowsOnly: true
+                true, onScreenWindowsOnly: onScreenOnly
             )
             var map: [CGWindowID: SCWindow] = [:]
             for window in content.windows { map[window.windowID] = window }

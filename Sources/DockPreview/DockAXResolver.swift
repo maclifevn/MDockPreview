@@ -189,6 +189,60 @@ enum DockAXResolver {
             }
     }
 
+    /// Validates Window Server candidates against the application's AX tree.
+    /// Unlike `windows(processIdentifier:limit:)`, this deliberately has no
+    /// fallback for unknown subroles: the window switcher uses it to add
+    /// off-screen/minimized windows, where accepting every resolvable ID would
+    /// also expose Chrome helper and placeholder windows.
+    static func switchableWindows(
+        processIdentifier: pid_t,
+        matching candidateIDs: Set<CGWindowID>
+    ) -> [DockAXWindow] {
+        guard AccessibilityPermission.isTrusted, !candidateIDs.isEmpty else { return [] }
+        let application = AXUIElementCreateApplication(processIdentifier)
+        AXUIElementSetMessagingTimeout(application, applicationTimeout)
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            application,
+            kAXWindowsAttribute as CFString,
+            &value
+        ) == .success, let axWindows = value as? [AXUIElement] else { return [] }
+
+        var matches: [DockAXWindow] = []
+        var remaining = candidateIDs
+        for element in axWindows where !remaining.isEmpty {
+            // Discovery runs away from the UI actor, so it can afford the
+            // normal application timeout. The 30 ms hover timeout is too
+            // aggressive for a busy Chrome profile and made valid windows
+            // intermittently disappear.
+            AXUIElementSetMessagingTimeout(element, applicationTimeout)
+            var windowID: CGWindowID = 0
+            guard _AXUIElementGetWindow(element, &windowID) == .success,
+                  remaining.contains(windowID) else { continue }
+
+            let subrole = stringAttribute(
+                element,
+                kAXSubroleAttribute as CFString
+            )
+            let isMinimized = boolAttribute(
+                element,
+                kAXMinimizedAttribute as CFString
+            ) ?? false
+            guard DockAXWindowSelectionPolicy.selectsAsStandard(
+                subrole: subrole,
+                isMinimized: isMinimized
+            ) else { continue }
+
+            matches.append(DockAXWindow(
+                windowID: windowID,
+                title: stringAttribute(element, kAXTitleAttribute as CFString),
+                isMinimized: isMinimized
+            ))
+            remaining.remove(windowID)
+        }
+        return matches
+    }
+
     /// Focuses one specific window: un-minimize if needed, raise, mark main.
     @discardableResult
     static func raise(_ window: DockAXWindowResolution) -> Bool {

@@ -10,8 +10,8 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: com.maclife.mdockpreview
     # Xcode 26 no longer supports the legacy monolithic header map.
     ALWAYS_SEARCH_USER_PATHS: NO
-    MARKETING_VERSION: "1.0.6"
-    CURRENT_PROJECT_VERSION: "7"
+    MARKETING_VERSION: "1.0.7"
+    CURRENT_PROJECT_VERSION: "8"
     SWIFT_VERSION: "6.0"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     # Local, unsandboxed development build. Automatic signing reuses the same

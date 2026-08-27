@@ -6,6 +6,7 @@ enum SwitcherMetrics {
     static let thumbnailHeight: CGFloat = 118
     static let titleHeight: CGFloat = 18
     static let tileSpacing: CGFloat = 14
+    static let contentSpacing: CGFloat = 12
     static let padding: CGFloat = 22
     static let headerHeight: CGFloat = 44
     static let maxColumns = 5
@@ -33,13 +34,14 @@ final class SwitcherPanelController {
             hosting = view
         }
 
+        let targetScreen = screen ?? NSScreen.main
         let count = model.windows.count
-        let columns = fittingColumns(count: count, screen: screen)
+        let columns = fittingColumns(count: count, screen: targetScreen)
         model.columns = columns
-        let size = panelSize(columns: columns, count: count)
+        let size = panelSize(columns: columns, count: count, screen: targetScreen)
 
         panel.setContentSize(size)
-        if let frame = (screen ?? NSScreen.main)?.frame {
+        if let frame = targetScreen?.visibleFrame {
             panel.setFrameOrigin(CGPoint(
                 x: frame.midX - size.width / 2,
                 y: frame.midY - size.height / 2
@@ -52,7 +54,7 @@ final class SwitcherPanelController {
     func hide() { panel?.orderOut(nil) }
 
     private func fittingColumns(count: Int, screen: NSScreen?) -> Int {
-        let maxWidth = ((screen ?? NSScreen.main)?.frame.width ?? 1440) * 0.9
+        let maxWidth = ((screen ?? NSScreen.main)?.visibleFrame.width ?? 1440) * 0.9
         var columns = max(1, min(SwitcherMetrics.maxColumns, count))
         while columns > 1 {
             let width = CGFloat(columns) * SwitcherMetrics.tileWidth
@@ -64,16 +66,18 @@ final class SwitcherPanelController {
         return columns
     }
 
-    private func panelSize(columns: Int, count: Int) -> NSSize {
+    private func panelSize(columns: Int, count: Int, screen: NSScreen?) -> NSSize {
         let rows = max(1, Int(ceil(Double(count) / Double(max(1, columns)))))
         let width = CGFloat(columns) * SwitcherMetrics.tileWidth
             + CGFloat(columns - 1) * SwitcherMetrics.tileSpacing
             + SwitcherMetrics.padding * 2
-        let height = SwitcherMetrics.headerHeight
+        let desiredHeight = SwitcherMetrics.headerHeight
+            + SwitcherMetrics.contentSpacing
             + CGFloat(rows) * SwitcherMetrics.rowHeight
             + CGFloat(rows - 1) * SwitcherMetrics.tileSpacing
             + SwitcherMetrics.padding * 2
-        return NSSize(width: width, height: height)
+        let availableHeight = ((screen ?? NSScreen.main)?.visibleFrame.height ?? 900) * 0.9
+        return NSSize(width: width, height: min(desiredHeight, availableHeight))
     }
 
     private func makePanel() -> NSPanel {
@@ -103,7 +107,7 @@ private struct SwitcherView: View {
 
     var body: some View {
         let theme = themeStore.theme
-        VStack(spacing: 12) {
+        VStack(spacing: SwitcherMetrics.contentSpacing) {
             VStack(spacing: 2) {
                 Text(model.selectedAppName)
                     .font(.headline)
@@ -117,15 +121,27 @@ private struct SwitcherView: View {
             .frame(height: SwitcherMetrics.headerHeight)
             .frame(maxWidth: .infinity)
 
-            LazyVGrid(columns: gridColumns, spacing: SwitcherMetrics.tileSpacing) {
-                ForEach(Array(model.windows.enumerated()), id: \.element.id) { index, window in
-                    SwitcherTile(
-                        window: window,
-                        selected: index == model.selectedIndex,
-                        theme: theme
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture { model.onSelectIndex?(index) }
+            ScrollViewReader { proxy in
+                ScrollView(.vertical) {
+                    LazyVGrid(columns: gridColumns, spacing: SwitcherMetrics.tileSpacing) {
+                        ForEach(Array(model.windows.enumerated()), id: \.element.id) { index, window in
+                            SwitcherTile(
+                                window: window,
+                                selected: index == model.selectedIndex,
+                                theme: theme
+                            )
+                            .id(window.id)
+                            .contentShape(Rectangle())
+                            .onTapGesture { model.onSelectIndex?(index) }
+                        }
+                    }
+                }
+                .onAppear { scrollToSelection(using: proxy) }
+                .onChange(of: model.selectedIndex) { _, _ in
+                    scrollToSelection(using: proxy)
+                }
+                .onChange(of: model.windows.map(\.id)) { _, _ in
+                    scrollToSelection(using: proxy)
                 }
             }
         }
@@ -151,6 +167,11 @@ private struct SwitcherView: View {
             repeating: GridItem(.fixed(SwitcherMetrics.tileWidth), spacing: SwitcherMetrics.tileSpacing),
             count: max(1, model.columns)
         )
+    }
+
+    private func scrollToSelection(using proxy: ScrollViewProxy) {
+        guard model.windows.indices.contains(model.selectedIndex) else { return }
+        proxy.scrollTo(model.windows[model.selectedIndex].id, anchor: .center)
     }
 }
 

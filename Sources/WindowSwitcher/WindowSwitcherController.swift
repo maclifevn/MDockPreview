@@ -18,6 +18,10 @@ final class WindowSwitcherController {
     private var hotkey: SwitcherHotkeyMonitor?
     private var active = false
     private var captureTask: Task<Void, Never>?
+    private var discoveryTask: Task<Void, Never>?
+    private var discoveryGeneration: UInt64 = 0
+    private var cacheGeneration: UInt64 = 0
+    private var cachedOffScreenWindows: [SwitcherWindowDescriptor] = []
 
     /// Notifies when the switcher opens/closes so the Dock preview can suspend.
     var onActiveChanged: ((Bool) -> Void)?
@@ -57,8 +61,14 @@ final class WindowSwitcherController {
 
     private func present(forward: Bool) {
         let selfPID = ProcessInfo.processInfo.processIdentifier
-        let windows = SwitcherWindowLister.currentWindows(excluding: selfPID)
-        guard !windows.isEmpty else { return }
+        let onScreen = SwitcherWindowLister.currentWindows(excluding: selfPID)
+        let allCandidates = SwitcherWindowLister.allCandidates(excluding: selfPID)
+        let initialDescriptors = windowsUsingCache(
+            onScreen: onScreen,
+            allCandidates: allCandidates
+        )
+        guard !initialDescriptors.isEmpty else { return }
+        let windows = makeWindows(from: initialDescriptors)
 
         panel.model.windows = windows
         let count = windows.count
@@ -68,7 +78,14 @@ final class WindowSwitcherController {
         active = true
         onActiveChanged?(true)
         panel.show(on: screenForSwitcher())
-        startCapturing()
+        startCapturing(onScreenOnly: initialDescriptors.count == onScreen.count)
+
+        discoveryGeneration &+= 1
+        startExtendedDiscovery(
+            onScreen: onScreen,
+            allCandidates: allCandidates,
+            generation: discoveryGeneration
+        )
     }
 
     private func advance(forward: Bool) {
@@ -107,21 +124,171 @@ final class WindowSwitcherController {
     private func cancel() { hide() }
 
     private func hide() {
-        guard active else { return }
-        active = false
+        discoveryGeneration &+= 1
+        discoveryTask?.cancel()
+        discoveryTask = nil
         captureTask?.cancel()
         captureTask = nil
+        guard active else { return }
+        active = false
         panel.hide()
         onActiveChanged?(false)
     }
 
+    // MARK: - Window discovery
+
+    private func startExtendedDiscovery(
+        onScreen: [SwitcherWindowDescriptor],
+        allCandidates: [SwitcherWindowDescriptor],
+        generation: UInt64
+    ) {
+        discoveryTask?.cancel()
+        discoveryTask = Task { @MainActor [weak self] in
+            let descriptors = await Task.detached(priority: .userInitiated) {
+                await SwitcherWindowLister.switchableWindows(
+                    onScreenWindows: onScreen,
+                    allCandidates: allCandidates
+                )
+            }.value
+
+            guard let self else { return }
+            let onScreenIDs = Set(onScreen.map(\.id))
+            self.updateDiscoveryCache(
+                with: descriptors.filter { !onScreenIDs.contains($0.id) },
+                allCandidates: allCandidates,
+                generation: generation
+            )
+
+            guard !Task.isCancelled,
+                  self.active,
+                  self.discoveryGeneration == generation else { return }
+            guard !descriptors.isEmpty else {
+                self.hide()
+                return
+            }
+
+            let existingIDs = self.panel.model.windows.map(\.id)
+            guard descriptors.map(\.id) != existingIDs else { return }
+
+            let selectedID = self.panel.model.windows.indices
+                .contains(self.panel.model.selectedIndex)
+                ? self.panel.model.windows[self.panel.model.selectedIndex].id
+                : nil
+            let thumbnails = Dictionary(
+                uniqueKeysWithValues: self.panel.model.windows.compactMap { window in
+                    window.thumbnail.map { (window.id, $0) }
+                }
+            )
+            self.panel.model.windows = self.makeWindows(
+                from: descriptors,
+                thumbnails: thumbnails
+            )
+            if let selectedID,
+               let selectedIndex = descriptors.firstIndex(where: { $0.id == selectedID }) {
+                self.panel.model.selectedIndex = selectedIndex
+            } else {
+                self.panel.model.selectedIndex = min(
+                    self.panel.model.selectedIndex,
+                    max(0, descriptors.count - 1)
+                )
+            }
+
+            self.panel.show(on: self.screenForSwitcher())
+            self.startCapturing(onScreenOnly: false)
+        }
+    }
+
+    /// Reuses windows that AX has already validated so a quick press/release
+    /// still includes other Spaces on subsequent invocations. The current
+    /// Window Server snapshot removes cache entries as soon as their ID/PID no
+    /// longer exists.
+    private func windowsUsingCache(
+        onScreen: [SwitcherWindowDescriptor],
+        allCandidates: [SwitcherWindowDescriptor]
+    ) -> [SwitcherWindowDescriptor] {
+        let onScreenIDs = Set(onScreen.map(\.id))
+        let currentByID = Dictionary(
+            uniqueKeysWithValues: allCandidates.map { ($0.id, $0) }
+        )
+        let cached = cachedOffScreenWindows.compactMap { old -> SwitcherWindowDescriptor? in
+            guard !onScreenIDs.contains(old.id),
+                  let current = currentByID[old.id],
+                  current.processIdentifier == old.processIdentifier else { return nil }
+            return descriptor(current, usingTitleFrom: old)
+        }
+        return onScreen + cached
+    }
+
+    private func updateDiscoveryCache(
+        with fresh: [SwitcherWindowDescriptor],
+        allCandidates: [SwitcherWindowDescriptor],
+        generation: UInt64
+    ) {
+        guard generation >= cacheGeneration else { return }
+        let currentByID = Dictionary(
+            uniqueKeysWithValues: allCandidates.map { ($0.id, $0) }
+        )
+        var merged = fresh
+        var seen = Set(fresh.map(\.id))
+        for old in cachedOffScreenWindows where !seen.contains(old.id) {
+            guard let current = currentByID[old.id],
+                  current.processIdentifier == old.processIdentifier else { continue }
+            merged.append(descriptor(current, usingTitleFrom: old))
+            seen.insert(old.id)
+        }
+        cachedOffScreenWindows = merged
+        cacheGeneration = generation
+    }
+
+    private func descriptor(
+        _ current: SwitcherWindowDescriptor,
+        usingTitleFrom cached: SwitcherWindowDescriptor
+    ) -> SwitcherWindowDescriptor {
+        SwitcherWindowDescriptor(
+            id: current.id,
+            processIdentifier: current.processIdentifier,
+            appName: current.appName,
+            title: current.title.isEmpty ? cached.title : current.title,
+            aspectRatio: current.aspectRatio
+        )
+    }
+
+    private func makeWindows(
+        from descriptors: [SwitcherWindowDescriptor],
+        thumbnails: [CGWindowID: CGImage] = [:]
+    ) -> [SwitcherWindow] {
+        var iconCache: [pid_t: NSImage] = [:]
+        return descriptors.map { descriptor in
+            let icon: NSImage?
+            if let cached = iconCache[descriptor.processIdentifier] {
+                icon = cached
+            } else {
+                icon = NSRunningApplication(
+                    processIdentifier: descriptor.processIdentifier
+                )?.icon
+                if let icon { iconCache[descriptor.processIdentifier] = icon }
+            }
+            return SwitcherWindow(
+                id: descriptor.id,
+                processIdentifier: descriptor.processIdentifier,
+                appName: descriptor.appName,
+                appIcon: icon,
+                title: descriptor.title,
+                thumbnail: thumbnails[descriptor.id],
+                aspectRatio: descriptor.aspectRatio
+            )
+        }
+    }
+
     // MARK: - Thumbnails
 
-    private func startCapturing() {
+    private func startCapturing(onScreenOnly: Bool) {
         captureTask?.cancel()
         captureTask = Task { @MainActor [weak self] in
             guard let self else { return }
-            let shareable = await SwitcherThumbnailer.shareableWindows()
+            let shareable = await SwitcherThumbnailer.shareableWindows(
+                onScreenOnly: onScreenOnly
+            )
             if Task.isCancelled { return }
             for index in self.captureOrder() {
                 if Task.isCancelled { return }
